@@ -1,5 +1,4 @@
 /*const $app = document.getElementById('app');
-
 class Gato{
     constructor(){
         this.color='Cafe';
@@ -11,7 +10,6 @@ class Gato{
         });
     }
 }
-
 const gato =  new Gato();*/
 
 //Se crea el evento que escucha la ventana
@@ -34,6 +32,8 @@ window.addEventListener('load', function () {
                     this.game.keys.push(e.key);
                 } else if (e.key === ' ') {
                     this.game.player.shootTop()
+                } else if (e.key === 'd') {
+                    this.game.debug = !this.game.debug
                 }
             });
 
@@ -41,6 +41,7 @@ window.addEventListener('load', function () {
                 if (this.game.keys.indexOf(e.key) > -1) {
                     this.game.keys.splice(this.game.keys.indexOf(e.key), 1)
                 }
+                //console.log(this.game.keys);
             })
         }
     }
@@ -67,7 +68,7 @@ window.addEventListener('load', function () {
             }
         }
         draw(context) {
-            context.fillStyle = 'white'; //Sexto cambio
+            context.fillStyle = '#FF9803'; //Sexto cambio
             context.fillRect(this.x, this.y, this.width, this.height);
         }
     }
@@ -82,9 +83,13 @@ window.addEventListener('load', function () {
             this.height = 190;
             this.x = 20;
             this.y = 100;
+            this.frameX = 0;
+            this.frameY = 1;
             this.speedY = 0;
-            this.maxSpeed = 1.5; //Septimo cambio
+            this.maxSpeed = 1.5; //Quinto cambio
             this.projectiles = [];
+            this.image = document.getElementById('player');
+            this.maxFrame = 37;
         }
 
         update() {
@@ -103,19 +108,28 @@ window.addEventListener('load', function () {
             });
 
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
+            if (this.frameX < this.maxFrame) {
+                this.frameX++;
 
+            } else {
+                this.frameX = 0;
+            }
         }
 
         draw(context) {
-            this.black = this.black ? false : true
-            context.fillStyle = '#9A7C01'; //Quinto cambio
-            context.fillRect(this.x, this.y, this.width, this.height);
+            //this.black = this.black?false:true
+            if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
+            context.drawImage(this.image,
+                this.frameX * this.width,
+                this.frameY * this.height,
+                this.width, this.height,
+                this.x, this.y,
+                this.width, this.height
+            )
             this.projectiles.forEach(projectile => {
                 projectile.draw(context);
             });
         }
-
-
 
         shootTop() {
             if (this.game.ammo > 0) {
@@ -136,6 +150,9 @@ window.addEventListener('load', function () {
             this.markedForDeletion = false;
             this.lives = 5;
             this.score = this.lives;
+            this.frameX = 0;
+            this.frameY = 0;
+            this.maxFrame = 37;
         }
 
         update() {
@@ -143,26 +160,25 @@ window.addEventListener('load', function () {
             if (this.x + this.width < 0) {
                 this.markedForDeletion = true;
             }
+            if (this.frameX < this.maxFrame) {
+                this.frameX++;
+            } else {
+                this.frameX = 0
+            }
         }
 
         draw(context) {
-            context.fillStyle = '#03FFCD'; //Octavo cambio
-            context.fillRect(this.x, this.y, this.width, this.height);
-            context.fillStyle = 'red'; //Noveno cambio
+            if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
+            context.drawImage(this.image,
+                this.frameX * this.width,
+                this.frameY * this.height,
+                this.width, this.height,
+                this.x, this.y,
+                this.width, this.height
+
+            );
             context.font = '20px Helvetica';
             context.fillText(this.lives, this.x, this.y);
-        }
-    }
-
-    //CLASE
-    //Clase la cual extiende de enemy para que de esta manera los enemigos
-    //pundan salir de forma dinamica y en ditintas posiciones
-    class Angler1 extends Enemy {
-        constructor(game) {
-            super(game);
-            this.width = 228 * 0.2;
-            this.height = 169 * 0.04; //Decimo cambio
-            this.y = Math.random() * (this.game.height * 0.9 - this.height);
         }
     }
 
@@ -182,12 +198,14 @@ window.addEventListener('load', function () {
 
         update() {
             if (this.x <= -this.width) this.x = 0;
-            else this.x -= this.game.speed * this.speedModifier;
-        };
+            this.x -= this.game.speed * this.speedModifier;
+        }
 
         draw(context) {
             context.drawImage(this.image, this.x, this.y);
+            context.drawImage(this.image, this.x + this.width, this.y);
         }
+
     }
 
     //CLASE
@@ -200,24 +218,20 @@ window.addEventListener('load', function () {
             this.image2 = document.getElementById('layer2');
             this.image3 = document.getElementById('layer3');
             this.image4 = document.getElementById('layer4');
-            this.layer1 = new Layer(this.game, this.image1, 0.5);
-            this.layer2 = new Layer(this.game, this.image2, 0.7);
-            this.layer3 = new Layer(this.game, this.image3, 3);
-            this.layer4 = new Layer(this.game, this.image4, 1);
+            this.layer1 = new Layer(this.game, this.image1, 0.2);
+            this.layer2 = new Layer(this.game, this.image2, 0.4);
+            this.layer3 = new Layer(this.game, this.image3, 1.2);
+            this.layer4 = new Layer(this.game, this.image4, 1.7);
 
-            this.layers = [this.layer1, this.layer2, this.layer3, this.layer4];
+            this.layers = [this.layer1, this.layer2, this.layer3];
         }
 
         update() {
-            this.layers.forEach(layer => {
-                layer.update();
-            });
+            this.layers.forEach(layer => layer.update());
         }
 
         draw(context) {
-            this.layers.forEach(layer => {
-                layer.draw(context);
-            });
+            this.layers.forEach(layer => layer.draw(context));
         }
     }
 
@@ -229,43 +243,53 @@ window.addEventListener('load', function () {
             this.game = game;
             this.fontSize = 25;
             this.fontFamily = 'Helvetica';
-            this.color = 'white';
+            this.color = 'red'; //Septimo cambio
         }
 
         draw(context) {
             context.save();
             context.fillStyle = this.color;
-            context.font = this.fontSize + 'px' + this.fontFamily;
             context.shadowOffsetX = 2;
             context.shadowOffsetY = 2;
             context.shadowColor = 'black';
+            context.font = this.fontSize + ' px ' + this.fontFamily;
             context.fillText('Score: ' + this.game.score, 20, 40);
             for (let i = 0; i < this.game.ammo; i++) {
                 context.fillRect(20 + 5 * i, 50, 3, 20);
             }
             const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
-            context.fillText('Time: ' + formattedTime, 20, 100);
+            context.fillText('Timer: ' + formattedTime, 20, 100)
             if (this.game.gameOver) {
                 context.textAlign = 'center';
                 let message1;
                 let message2;
                 if (this.game.score > this.game.winningScore) {
                     message1 = 'You win!';
-                    message2 = "Well done";
+                    message2 = 'Well done';
                 } else {
                     message1 = 'You lose';
-                    message2 = 'Try again!';
-                };
-                context.font = '50px ' + this.fontFamily;
-                context.fillText(message1,
-                    this.game.width * 0.5,
-                    this.game.height * 0.5 - 20);
+                    message2 = 'Try again!'
+                }
+                context.font = '60px ' + this.fontFamily;
+                context.fillText(message1, this.game.width * 0.5, this.game.height * 0.5 - 20);
                 context.font = '25px ' + this.fontFamily;
-                context.fillText(message2,
-                    this.game.width * 0.5,
-                    this.game.height * 0.5 + 20);
+                context.fillText(message2, this.game.width * 0.5, this.game.height * 0.5 + 20);
             }
             context.restore();
+        }
+    }
+
+    //CLASE
+    //Clase la cual extiende de enemy para que de esta manera los enemigos
+    //pundan salir de forma dinamica y en ditintas posiciones
+    class Angler1 extends Enemy {
+        constructor(game) {
+            super(game);
+            this.width = 228;
+            this.height = 169;
+            this.y = Math.random() * (this.game.height * 0.9 - this.height);
+            this.image = document.getElementById('angler1');
+            this.frameY = Math.floor(Math.random() * 3);
         }
     }
 
@@ -288,23 +312,25 @@ window.addEventListener('load', function () {
             this.maxAmmo = 25; //Primer cambio
             this.enemies = [];
             this.enemyTimer = 0;
-            this.enemyInterval = 1000;
+            this.enmyInterval = 500;
             this.gameOver = false;
             this.score = 0;
             this.winningScore = 20; //Segundo cambio
             this.gameTime = 0;
             this.timeLimit = 25000; //Tercer cambio
             this.speed = 1;
+            this.debug = false;
         }
 
         update(deltaTime) {
             if (!this.gameOver) this.gameTime += deltaTime;
             if (this.gameTime > this.timeLimit) this.gameOver = true;
             this.background.update();
+            this.background.layer4.update();
             this.player.update(deltaTime);
             if (this.ammoTimer > this.ammoInterval) {
                 if (this.ammo < this.maxAmmo) {
-                    this.ammo++;
+                    this.ammo += 2; //Octavo cambio
                     this.ammoTimer = 0;
                 }
             } else {
@@ -313,26 +339,27 @@ window.addEventListener('load', function () {
 
             this.enemies.forEach(enemy => {
                 enemy.update();
-                if (this.checkCollison(this.player, enemy)) {
+                if (this.checkCollision(this.player, enemy)) {
                     enemy.markedForDeletion = true;
-                }; this.player.projectiles.forEach(projectile => {
-                    if (this.checkCollison(projectile, enemy)) {
+                }
+                this.player.projectiles.forEach(projectile => {
+                    if (this.checkCollision(projectile, enemy)) {
                         enemy.lives--;
                         projectile.markedForDeletion = true;
-                        if (enemy.lives < 0) {
+                        if (enemy.lives <= 0) {
                             enemy.markedForDeletion = true;
                             if (!this.gameOver) {
-                                this.score += enemy.score;
+                                this.score += enemy.score
                             }
                             if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
-                })
-            })
+                });
+            });
 
             this.enemies = this.enemies.filter(enemy => !enemy.markedForDeletion);
 
-            if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
+            if (this.enemyTimer > this.enmyInterval && !this.gameOver) {
                 this.addEnemy();
                 this.enemyTimer = 0;
             } else {
@@ -347,15 +374,16 @@ window.addEventListener('load', function () {
             this.enemies.forEach(enemy => {
                 enemy.draw(context);
             });
+            this.background.layer4.draw(context);
         }
 
         addEnemy() {
             this.enemies.push(new Angler1(this));
         }
 
-        checkCollison(rect1, rect2) {
+        checkCollision(rect1, rect2) {
             return (rect1.x < rect2.x + rect2.width
-                && rect1.x + rect2.width > rect2.x
+                && rect1.x + rect1.width > rect2.x
                 && rect1.y < rect2.y + rect2.height
                 && rect1.height + rect1.y > rect2.y
             );
