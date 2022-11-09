@@ -14,12 +14,16 @@ class Gato{
 
 const gato =  new Gato();*/
 
+//Se crea el evento que escucha la ventana
 window.addEventListener('load', function () {
     const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext("2d")
     canvas.width = 500;
     canvas.height = 500;
 
+    //CLASE IMPORTANTE
+    //Nos ayuda a escuchar los eventos que ocurren atravez de las teclas
+    //dentro de nuestro teclado, lo que ocaciona una ejecucion de eventos
     class InputHandler {
         constructor(game) {
             this.game = game;
@@ -41,6 +45,9 @@ window.addEventListener('load', function () {
         }
     }
 
+    //CLASE IMPORTANTE
+    //Clase la cual nos ayuda a pintar el proyectil
+    //dependiendo de las cordenadas en donde se encuentre nuestro player
     class Projectile {
         constructor(game, x, y) {
             this.game = game;
@@ -60,11 +67,14 @@ window.addEventListener('load', function () {
             }
         }
         draw(context) {
-            context.fillStyle = 'yellow';
+            context.fillStyle = 'white'; //Sexto cambio
             context.fillRect(this.x, this.y, this.width, this.height);
         }
     }
 
+    //CLASE IMPORTANTE
+    //Clase que nos ayuda a pintar el jugador en la pantalla
+    //la cual tiene dunciones que nos ayudan a moverlo y ejecutar acciones
     class Player {
         constructor(game) {
             this.game = game;
@@ -73,7 +83,7 @@ window.addEventListener('load', function () {
             this.x = 20;
             this.y = 100;
             this.speedY = 0;
-            this.maxSpeed = 1;
+            this.maxSpeed = 1.5; //Septimo cambio
             this.projectiles = [];
         }
 
@@ -98,7 +108,7 @@ window.addEventListener('load', function () {
 
         draw(context) {
             this.black = this.black ? false : true
-            context.fillStyle = 'black'
+            context.fillStyle = '#9A7C01'; //Quinto cambio
             context.fillRect(this.x, this.y, this.width, this.height);
             this.projectiles.forEach(projectile => {
                 projectile.draw(context);
@@ -115,6 +125,9 @@ window.addEventListener('load', function () {
         }
     }
 
+    //CLASE
+    //Clase que nos ayuda a pintar a los enemigos en el area del juego
+    //de esta manera los podremos pintar y se les da velocidad y el tamaño deceado
     class Enemy {
         constructor(game) {
             this.game = game;
@@ -133,23 +146,29 @@ window.addEventListener('load', function () {
         }
 
         draw(context) {
-            context.fillStyle = 'red';
+            context.fillStyle = '#03FFCD'; //Octavo cambio
             context.fillRect(this.x, this.y, this.width, this.height);
-            context.fillStyle = 'black';
+            context.fillStyle = 'red'; //Noveno cambio
             context.font = '20px Helvetica';
             context.fillText(this.lives, this.x, this.y);
         }
     }
 
+    //CLASE
+    //Clase la cual extiende de enemy para que de esta manera los enemigos
+    //pundan salir de forma dinamica y en ditintas posiciones
     class Angler1 extends Enemy {
         constructor(game) {
             super(game);
             this.width = 228 * 0.2;
-            this.height = 169 * 0.2;
+            this.height = 169 * 0.04; //Decimo cambio
             this.y = Math.random() * (this.game.height * 0.9 - this.height);
         }
     }
 
+    //CLASE
+    //Clase la cual nos ayuda a poderle dar movimiento a cada una de las 
+    //imagenes que tenemos de background
     class Layer {
         constructor(game, image, speedModifier) {
             this.game = game;
@@ -171,6 +190,9 @@ window.addEventListener('load', function () {
         }
     }
 
+    //CLASE
+    //Clase la cual nos ayuda a poder pintar las distintas imagenes que tenemos
+    //y que se mostraran de fondo en nuestro videojuego
     class Background {
         constructor(game) {
             this.game = game;
@@ -199,6 +221,9 @@ window.addEventListener('load', function () {
         }
     }
 
+    //CLASE DE ESTILOS
+    //Clase la cual nos ayuda a poder pintar de manera concreta y con estilos
+    //nuestro juego, para asi darle dinamismo y que sea de esta manera atractivo
     class UI {
         constructor(game) {
             this.game = game;
@@ -244,6 +269,10 @@ window.addEventListener('load', function () {
         }
     }
 
+    //CLASE PRIORITARIA
+    //Esta clase es la mas importante de nuestro juego ya que nos ayuda a poder pintar
+    //el juego de manera en la cual nos respete todas las clase con las reglas
+    //puestas en cada una de ellas
     class Game {
         constructor(width, height) {
             this.width = width;
@@ -253,18 +282,18 @@ window.addEventListener('load', function () {
             this.ui = new UI(this);
             this.background = new Background(this);
             this.keys = [];
-            this.ammo = 20;
+            this.ammo = 12; //Cuarto cambio
             this.ammoTimer = 0;
             this.ammoInterval = 500;
-            this.maxAmmo = 50;
+            this.maxAmmo = 25; //Primer cambio
             this.enemies = [];
             this.enemyTimer = 0;
             this.enemyInterval = 1000;
             this.gameOver = false;
             this.score = 0;
-            this.winningScore = 10;
+            this.winningScore = 20; //Segundo cambio
             this.gameTime = 0;
-            this.timeLimit = 10000;
+            this.timeLimit = 25000; //Tercer cambio
             this.speed = 1;
         }
 
@@ -333,6 +362,9 @@ window.addEventListener('load', function () {
         }
     }
 
+    //Esta parte del codigo nos ayuda a poder tiempos los cuales nos ayudan
+    //al control del juego, de esta manera podemos controlar la salida y la entrada
+    //de tiempos dentro de la partida del jugador
     const game = new Game(canvas.width, canvas.height);
     let lastTime = 0;
 
