@@ -242,7 +242,7 @@ window.addEventListener('load', function () {
         constructor(game) {
             this.game = game;
             this.fontSize = 25;
-            this.fontFamily = 'Helvetica';
+            this.fontFamily = 'Arial'; //Decimo cambio
             this.color = 'red'; //Septimo cambio
         }
 
@@ -270,7 +270,7 @@ window.addEventListener('load', function () {
                     message1 = 'You lose';
                     message2 = 'Try again!'
                 }
-                context.font = '60px ' + this.fontFamily;
+                context.font = '60px ' + this.fontFamily; //Noveno cambio
                 context.fillText(message1, this.game.width * 0.5, this.game.height * 0.5 - 20);
                 context.font = '25px ' + this.fontFamily;
                 context.fillText(message2, this.game.width * 0.5, this.game.height * 0.5 + 20);
